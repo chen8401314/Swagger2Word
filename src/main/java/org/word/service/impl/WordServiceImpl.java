@@ -430,18 +430,18 @@ public class WordServiceImpl implements WordService {
 
         List<ModelAttr> attrList = getModelAttrs(swaggerMap, resMap, modeAttr, modeProperties);
         List allOf = (List) swaggerMap.get(modeName).get("allOf");
-        if(allOf!=null){
+        if (allOf != null) {
             for (int i = 0; i < allOf.size(); i++) {
                 Map c = (Map) allOf.get(i);
-                if(c.get("$ref")!=null){
+                if (c.get("$ref") != null) {
                     String refName = c.get("$ref").toString();
                     //截取 #/definitions/ 后面的
                     String clsName = refName.substring(14);
                     Map<String, Object> modeProperties1 = (Map<String, Object>) swaggerMap.get(clsName).get("properties");
                     List<ModelAttr> attrList1 = getModelAttrs(swaggerMap, resMap, modeAttr, modeProperties1);
-                    if(attrList1!=null && attrList!=null){
+                    if (attrList1 != null && attrList != null) {
                         attrList.addAll(attrList1);
-                    }else if(attrList==null && attrList1!=null){
+                    } else if (attrList == null && attrList1 != null) {
                         attrList = attrList1;
                     }
                 }
@@ -570,10 +570,10 @@ public class WordServiceImpl implements WordService {
         if (!jsonMap.isEmpty()) {
             if (jsonMap.size() == 1) {
                 for (Entry<String, Object> entry : jsonMap.entrySet()) {
-                    res += " -d '" + JsonUtils.writeJsonStr(entry.getValue()) + "'";
+                    res += JsonUtils.writeJsonStr(entry.getValue()) + " ";
                 }
             } else {
-                res += " -d '" + JsonUtils.writeJsonStr(jsonMap) + "'";
+                res += JsonUtils.writeJsonStr(jsonMap) + " ";
             }
         }
         return res;
@@ -617,6 +617,14 @@ public class WordServiceImpl implements WordService {
                 list.add(map);
                 return list;
             case "object":
+                map = new LinkedHashMap<>();
+                if (modelAttr != null && !CollectionUtils.isEmpty(modelAttr.getProperties())) {
+                    for (ModelAttr subModelAttr : modelAttr.getProperties()) {
+                        map.put(subModelAttr.getName(), getValue(subModelAttr.getType(), subModelAttr));
+                    }
+                }
+                return map;
+            case "body":
                 map = new LinkedHashMap<>();
                 if (modelAttr != null && !CollectionUtils.isEmpty(modelAttr.getProperties())) {
                     for (ModelAttr subModelAttr : modelAttr.getProperties()) {
