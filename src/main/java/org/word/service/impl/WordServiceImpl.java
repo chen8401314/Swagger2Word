@@ -423,6 +423,9 @@ public class WordServiceImpl implements WordService {
         } else if (modeAttr.isCompleted()) {
             return resMap.get("#/definitions/" + modeName);
         }
+        if("ZonedDateTime".equals(modeName)){
+            return null;
+        }
         Map<String, Object> modeProperties = (Map<String, Object>) swaggerMap.get(modeName).get("properties");
         if (modeProperties == null) {
             return null;
