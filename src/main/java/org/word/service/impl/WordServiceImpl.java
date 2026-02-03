@@ -6,6 +6,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.word.model.ModelAttr;
@@ -42,7 +46,11 @@ public class WordServiceImpl implements WordService {
     public Map<String, Object> tableList(String swaggerUrl) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
-            String jsonStr = restTemplate.getForObject(swaggerUrl, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Basic YWRtaW46aHVhZ3VpYWRtaW4=");
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(swaggerUrl, HttpMethod.GET, entity, String.class);
+            String jsonStr = response.getBody();
             resultMap = tableListFromString(jsonStr);
             log.debug(JsonUtils.writeJsonStr(resultMap));
         } catch (Exception e) {
